@@ -27,8 +27,6 @@ class EosService {
   }
 
   Future<dynamic> sendTransaction(dynamic action) async {
-    //print('[eos] send transaction ($account | $name)');
-// {String account, String name, Map<String, dynamic> data}
     var transaction = Transaction()
       ..actions = [
         Action()
