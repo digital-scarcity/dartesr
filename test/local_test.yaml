@@ -3,4 +3,3 @@ accountA: accta
 accountB: acctb
 testPrivateKey: 5KHPKV5YyrSNNmGVPEQwUsev3SGumEihMSFx8Xo7j1USzPRx4yD
 testPublicKey: EOS7SP5KNgtKACqLK5Dh6Nj6Kx5GkYgpTrHUMTw7btm8KS671kZLo
-decoderEndpoint: https://testnet.telos.caleos.io

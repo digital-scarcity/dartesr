@@ -32,72 +32,61 @@ void main() {
   group('ESR Group', () {
     test('Decode trx: voteproducer', () async {
       var trx = 'esr:gmNgZGRkAIFXBqEFopc6760yugsVYWBggtKCMIEFRnclpF9eTWUACgAA';
-
-      var readableRequest = await decoderEos.toAction(trx);
-      print('Action Contract       : ' + readableRequest['account']);
-      print('Action Name           : ' + readableRequest['action']);
-      print('Action Data           : ' + readableRequest['data']);
-      expect(readableRequest['account'], 'eosio');
-      expect(readableRequest['action'], 'voteproducer');
-      expect(readableRequest['data'],
-          '{voter: ............1, proxy: greymassvote, producers: []}');
+      var action = await decoderEos.toAction(trx);
+      expect(action.account, 'eosio');
+      expect(action.name, 'voteproducer');
     });
 
     test('Decode trx: transfer, no memo', () async {
       var trx =
           'esr:gmPgY2BY1mTC_MoglIGBIVzX5uxZRkYGCGCC0ooGmvN67fgn2jEwGKz9xbbCE6aAJcTHPxjEAAoAAA';
 
-      var readableRequest = await decoderEos.toAction(trx);
-      print('Action Contract       : ' + readableRequest['account']);
-      print('Action Name           : ' + readableRequest['action']);
-      print('Action Data           : ' + readableRequest['data']);
-      expect(readableRequest['account'], 'eosio.token');
-      expect(readableRequest['action'], 'transfer');
-      expect(readableRequest['data'],
-          '{from: buckyjohnson, to: dao.hypha, quantity: 0.0001 TLOS, memo: }');
+      var action = await decoderEos.toAction(trx);
+      expect(action.account, 'eosio.token');
+      expect(action.name, 'transfer');
+      expect(action.data['from'], 'buckyjohnson');
+      expect(action.data['to'], 'dao.hypha');
+      expect(action.data['quantity'], '0.0001 TLOS');
+      expect(action.data['memo'], '');
     });
 
     test('Decode trx: transfer, with memo', () async {
       var trx =
           'esr:gmPgY2BY1mTC_MoglIGBIVzX5uxZRkYGCGCC0qoGmvN67fgn2jn4Or1btXLGdJgClhAf_2AQXZJaXAIUBAA';
 
-      var readableRequest = await decoderEos.toAction(trx);
-      print('Action Contract       : ' + readableRequest['account']);
-      print('Action Name           : ' + readableRequest['action']);
-      print('Action Data           : ' + readableRequest['data']);
-      expect(readableRequest['account'], 'eosio.token');
-      expect(readableRequest['action'], 'transfer');
-      expect(readableRequest['data'],
-          '{from: buckyjohnson, to: mygenericdao, quantity: 0.0001 TLOS, memo: test}');
+      var action = await decoderEos.toAction(trx);
+      expect(action.account, 'eosio.token');
+      expect(action.name, 'transfer');
+      expect(action.data['from'], 'buckyjohnson');
+      expect(action.data['to'], 'mygenericdao');
+      expect(action.data['quantity'], '0.0001 TLOS');
+      expect(action.data['memo'], 'test');
     });
 
-    test('Decode transactions', () async {
+    test('Decode transactions: EOS with memo', () async {
       var trx =
           'esr:gmNgZGBY1mTC_MoglIGBIVzX5uxZRqAQGDBBaVUgXsCs_DmJQdM2fKn35ySYAhZX_2AwXZJaXAIUBAA';
 
-      var readableRequest = await decoderEos.toAction(trx);
-      print('Action Contract       : ' + readableRequest['account']);
-      print('Action Name           : ' + readableRequest['action']);
-      print('Action Data           : ' + readableRequest['data']);
-      expect(readableRequest['account'], 'eosio.token');
-      expect(readableRequest['action'], 'transfer');
-      expect(readableRequest['data'],
-          '{from: gftma.x, to: gftorderbook, quantity: 0.0001 EOS, memo: test}');
+      var action = await decoderEos.toAction(trx);
+      expect(action.account, 'eosio.token');
+      expect(action.name, 'transfer');
+      expect(action.data['from'], 'gftma.x');
+      expect(action.data['to'], 'gftorderbook');
+      expect(action.data['quantity'], '0.0001 EOS');
+      expect(action.data['memo'], 'test');
     });
 
-    test('Decode transactions', () async {
-      // var trx = 'esr:gmNgYmBY1mTC_MoglIGBIVzX5uxZRkYGCGCC0qogomGPxAQGBoO1v9hWeMIUsIT4-AeD6JLU4hKgIAA';
+    test('Decode transactions, short names', () async {
       var trx =
           'esr:gmNgYmBY1mTC_MoglIGBIVzX5uxZRkYGCGCC0qogomGPxAQGBoO1v9hWeMIUsIT4-AeD6JLU4hKgIAA';
 
-      var readableRequest = await decoderEos.toAction(trx);
-      print('Action Contract       : ' + readableRequest['account']);
-      print('Action Name           : ' + readableRequest['action']);
-      print('Action Data           : ' + readableRequest['data']);
-      expect(readableRequest['account'], 'eosio.token');
-      expect(readableRequest['action'], 'transfer');
-      expect(readableRequest['data'],
-          '{from: m.gft, to: dao.hypha, quantity: 0.0001 TLOS, memo: test}');
+      var action = await decoderEos.toAction(trx);
+      expect(action.account, 'eosio.token');
+      expect(action.name, 'transfer');
+      expect(action.data['from'], 'm.gft');
+      expect(action.data['to'], 'dao.hypha');
+      expect(action.data['quantity'], '0.0001 TLOS');
+      expect(action.data['memo'], 'test');
     });
 
     test('Get node info', () async {

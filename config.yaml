@@ -2,11 +2,3 @@ endpoint: http://localhost:8888
 privateKey: 5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3 
 accountName: buckyjohnson
 transaction: esr:gmNgYmBY1mTC_MoglIGBIVzX5uxZRkYGCGCC0qoQynhCw3qviy-DV3vCFLCE-PgHg-iS1OISoCAA
-
-# testing configuration
-testConfig:
-  endpoint: http://localhost:8888
-  accountA: accta
-  accountB: acctb
-  testPrivateKey: 5KHPKV5YyrSNNmGVPEQwUsev3SGumEihMSFx8Xo7j1USzPRx4yD
-  testPublicKey: EOS7SP5KNgtKACqLK5Dh6Nj6Kx5GkYgpTrHUMTw7btm8KS671kZLo

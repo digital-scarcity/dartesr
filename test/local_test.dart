@@ -1,4 +1,5 @@
-// import 'package:dartesr/main.dart';
+@TestOn('mac-os')  // only run on my machine b/c I have nodeos running
+
 import 'package:test/test.dart';
 import 'package:dartesr/eos_service.dart';
 import 'package:eosdart/eosdart.dart';
@@ -9,7 +10,6 @@ class TestConfiguration extends Configuration {
   TestConfiguration(String fileName) : super.fromFile(File(fileName));
 
   String endpoint;
-  String decoderEndpoint;
   String accountA;
   String accountB;
   String testPublicKey;
@@ -19,9 +19,8 @@ class TestConfiguration extends Configuration {
 void main() {
   var config, trxEos;
 
-  config = TestConfiguration('test/config.yaml');
+  config = TestConfiguration('test/local_test.yaml');
   print('Endpoint               :   ${config.endpoint}');
-  print('Decoder Endpoint       :   ${config.decoderEndpoint}');
   print('Test Account A         :   ${config.accountA}');
   print('Test Account B         :   ${config.accountB}');
   print('Test Public Key        :   ${config.testPublicKey}');
@@ -54,11 +53,7 @@ void main() {
             'quantity': '0.01 TOKEN',
             'memo': 'test memo',
           }
-        // '{from: ${config.accountA} to: ${config.accountB} quantity: 1.00 TOKEN memo: test}'
       ];
-
-      // var response = await trxEos.client.pushTransaction (trx, broadcast: true);
-      // print ('Transaction ID: ' + response);
 
       trxEos.client.pushTransaction(trx, broadcast: true).then((trx) {
         print(trx);
