@@ -4,12 +4,13 @@ description: Dart implementation of EEP-7 - EOSIO Signing Requests
 # homepage: https://www.example.com
 
 environment:
-  sdk: '>=2.7.0 <3.0.0'
+  sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
   eosdart: ^0.4.4
   archive: ^2.0.13
   safe_config: ^2.0.2
+  mustache: ^1.1.1
 
 #  path: ^1.6.0
 
