@@ -5,7 +5,6 @@ import 'package:convert/convert.dart';
 import 'package:eosdart/eosdart.dart';
 import 'package:eosdart/src/eosdart_base.dart';
 import 'package:eosdart/src/serialize.dart' as ser;
-import 'package:mustache/mustache.dart';
 
 import './decode_string_request.dart';
 import './request_abi.dart';
