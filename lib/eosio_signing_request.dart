@@ -16,7 +16,6 @@ class EosioSigningRequest {
   String permission;
   String ricardian;
   String agreement;
-  // var esrType;
 
   EosioSigningRequest(this.client, this.account, this.permission);
 
@@ -60,9 +59,6 @@ class EosioSigningRequest {
     var decodedData = actionObj.deserialize(
         actionObj, ser.SerialBuffer(hex.decode(action['data'])));
 
-    //var template = Template(esr.ricardian, lenient: true);
-    // esr.agreement = template.renderString(decodedData);
-
     esr.action = Action()
       ..account = action['account']
       ..name = action['name']
@@ -75,9 +71,4 @@ class EosioSigningRequest {
 
     return esr;
   }
-
-  // Future<List> toTransaction(String esrString) async {
-  //   var transaction =
-  //   return transaction;
-  // }
 }

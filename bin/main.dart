@@ -1,12 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:async';
+
+import 'package:args/args.dart';
 import 'package:dartesr/eos_service.dart';
 import 'package:eosdart/eosdart.dart';
-import 'package:http/http.dart' as http;
 import 'package:safe_config/safe_config.dart';
-import 'package:eosdart/src/serialize.dart' as ser;
-import 'package:args/args.dart';
 
 class MainConfiguration extends Configuration {
   MainConfiguration(String fileName) : super.fromFile(File(fileName));
@@ -69,7 +68,6 @@ void main(List<String> arguments) async {
   } else {
     var esr = await trxEos.toRequest(args['esr']);
     print('Ricardian contract     :   ' + esr.ricardian);
-
     print('Execution action on    :   ' + esr.action.account);
     print('Action                 :   ' + esr.action.name);
     print('Signing with           :   ' + esr.account + '@' + esr.permission);
