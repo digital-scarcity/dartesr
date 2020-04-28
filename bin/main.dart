@@ -13,6 +13,8 @@ class MainConfiguration extends Configuration {
   String endpoint;
   String account;
   String privateKey;
+  String esrServiceHost;
+  int esrServicePort;
 }
 
 Future<dynamic> readResponse(HttpClientResponse response) {
@@ -41,37 +43,56 @@ void main(List<String> arguments) async {
     print('Endpoint               :   ${config.endpoint}');
     print('Test Account           :   ${config.account}');
     print('Test Private Key       :   ${config.privateKey}');
+    print('ESR Service Host       :   ${config.esrServiceHost}');
+    print('ESR Service Port       :   ${config.esrServicePort}');
     print('ESR                    :   ' + args['esr']);
   }
 
   var trxEos =
       await EosService(config.endpoint, config.account, config.privateKey);
 
-  if (args['use-service']) {
-    var request = await HttpClient().post('localhost', 3000, 'decode')
-      ..headers.contentType = ContentType.json
-      ..write(jsonEncode({
-        'authorization': {'actor': config.account, 'permission': 'active'},
-        'esrUri': args['esr']
-      }));
-    var response = await request.close();
-    var strResponse = await readResponse(response);
-    Map<String, dynamic> payload = jsonDecode(strResponse);
+  switch (arguments[0]) {
+    case 'decode':
+      if (args['use-service']) {
+        var request = await HttpClient()
+            .post(config.esrServiceHost, config.esrServicePort, 'decode')
+          ..headers.contentType = ContentType.json
+          ..write(jsonEncode({
+            'authorization': {'actor': config.account, 'permission': 'active'},
+            'esrUri': args['esr']
+          }));
+        var response = await request.close();
+        var strResponse = await readResponse(response);
+        Map<String, dynamic> payload = jsonDecode(strResponse);
 
-    print('\n**** Ricardian Contract ****\n');
-    print(payload['ricardianHtml']);
+        print('\n**** Ricardian Contract ****\n');
+        print(payload['ricardianHtml']);
 
-    var trx = await Transaction.fromJson(payload['transaction']);
-    print('\n**** Submitting Transaction to : ' + config.endpoint);
-    print('Transaction ID        :   ' +
-        (await trxEos.client.pushTransaction(trx))['transaction_id']);
-  } else {
-    var esr = await trxEos.toRequest(args['esr']);
-    print('Ricardian contract     :   ' + esr.ricardian);
-    print('Execution action on    :   ' + esr.action.account);
-    print('Action                 :   ' + esr.action.name);
-    print('Signing with           :   ' + esr.account + '@' + esr.permission);
+        var trx = await Transaction.fromJson(payload['transaction']);
+        print('\n**** Submitting Transaction to : ' + config.endpoint);
+        print('Transaction ID        :   ' +
+            (await trxEos.client.pushTransaction(trx))['transaction_id']);
+      } else {
+        var esr = await trxEos.toRequest(args['esr']);
+        print('Ricardian contract     :   ' + esr.ricardian);
+        print('Execution action on    :   ' + esr.action.account);
+        print('Action                 :   ' + esr.action.name);
+        print('Decoded data           :   ' + esr.jsonData);
+        print(
+            'Signing with           :   ' + esr.account + '@' + esr.permission);
+
+        print('Transaction ID        :   ' +
+            (await esr.push())['transaction_id']);
+      }
+      return;
+
+    case 'addnetwork':
+      print('adding a new network');
+      return;
+
+    default:
+      print(
+          'usage: main.dart [ addnetwork | decode [--use-service] {--esr} ] [--verbose]');
+      return;
   }
-
-  print('');
 }

@@ -16,6 +16,8 @@ class EosioSigningRequest {
   String permission;
   String ricardian;
   String agreement;
+  String jsonData;
+  var decodedData;
 
   EosioSigningRequest(this.client, this.account, this.permission);
 
@@ -56,8 +58,9 @@ class EosioSigningRequest {
     }
     var contract = Contract(types, actions);
     var actionObj = contract.actions[action['name']];
-    var decodedData = actionObj.deserialize(
+    esr.decodedData = actionObj.deserialize(
         actionObj, ser.SerialBuffer(hex.decode(action['data'])));
+    esr.jsonData = json.encode(esr.decodedData);
 
     esr.action = Action()
       ..account = action['account']
@@ -67,7 +70,7 @@ class EosioSigningRequest {
           ..actor = account
           ..permission = 'active'
       ]
-      ..data = decodedData;
+      ..data = esr.decodedData;
 
     return esr;
   }
