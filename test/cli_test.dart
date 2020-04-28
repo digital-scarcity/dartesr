@@ -1,3 +1,5 @@
+@TestOn('mac-os') // only run on my machine b/c I have nodeos running
+
 import 'package:test/test.dart';
 import 'package:dartesr/eos_service.dart';
 import 'package:eosdart/eosdart.dart';
@@ -26,13 +28,14 @@ void main() {
   print('Test Public Key        :   ${config.testPublicKey}');
   print('Test Private Key       :   ${config.testPrivateKey}');
 
-  decoderEos = EosService(config.decoderEndpoint, config.accountA, config.testPrivateKey);
+  decoderEos = EosService(
+      config.decoderEndpoint, config.accountA, config.testPrivateKey);
   trxEos = EosService(config.endpoint, config.accountA, config.testPrivateKey);
 
   group('ESR Group', () {
     test('Decode trx: voteproducer', () async {
       var trx = 'esr:gmNgZGRkAIFXBqEFopc6760yugsVYWBggtKCMIEFRnclpF9eTWUACgAA';
-      var action = await decoderEos.toAction(trx);
+      var action = await decoderEos.toRequest(trx);
       expect(action.account, 'eosio');
       expect(action.name, 'voteproducer');
     });
@@ -41,7 +44,7 @@ void main() {
       var trx =
           'esr:gmPgY2BY1mTC_MoglIGBIVzX5uxZRkYGCGCC0ooGmvN67fgn2jEwGKz9xbbCE6aAJcTHPxjEAAoAAA';
 
-      var action = await decoderEos.toAction(trx);
+      var action = await decoderEos.toRequest(trx);
       expect(action.account, 'eosio.token');
       expect(action.name, 'transfer');
       expect(action.data['from'], 'buckyjohnson');
@@ -54,7 +57,7 @@ void main() {
       var trx =
           'esr:gmPgY2BY1mTC_MoglIGBIVzX5uxZRkYGCGCC0qoGmvN67fgn2jn4Or1btXLGdJgClhAf_2AQXZJaXAIUBAA';
 
-      var action = await decoderEos.toAction(trx);
+      var action = await decoderEos.toRequest(trx);
       expect(action.account, 'eosio.token');
       expect(action.name, 'transfer');
       expect(action.data['from'], 'buckyjohnson');
@@ -67,7 +70,7 @@ void main() {
       var trx =
           'esr:gmNgZGBY1mTC_MoglIGBIVzX5uxZRqAQGDBBaVUgXsCs_DmJQdM2fKn35ySYAhZX_2AwXZJaXAIUBAA';
 
-      var action = await decoderEos.toAction(trx);
+      var action = await decoderEos.toRequest(trx);
       expect(action.account, 'eosio.token');
       expect(action.name, 'transfer');
       expect(action.data['from'], 'gftma.x');
@@ -80,7 +83,7 @@ void main() {
       var trx =
           'esr:gmNgYmBY1mTC_MoglIGBIVzX5uxZRkYGCGCC0qogomGPxAQGBoO1v9hWeMIUsIT4-AeD6JLU4hKgIAA';
 
-      var action = await decoderEos.toAction(trx);
+      var action = await decoderEos.toRequest(trx);
       expect(action.account, 'eosio.token');
       expect(action.name, 'transfer');
       expect(action.data['from'], 'm.gft');

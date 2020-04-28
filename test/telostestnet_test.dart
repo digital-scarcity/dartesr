@@ -1,3 +1,5 @@
+@TestOn('mac-os') // only run on my machine b/c I have nodeos running
+
 import 'dart:io';
 
 import 'package:dartesr/eos_service.dart';
@@ -48,6 +50,6 @@ void main() {
       var trxResponse = await trxEos.send(trx);
       print('Transaction ID      : ' + trxResponse['transaction_id']);
       //expect (trxResponse['transaction_id'])
-    });    
+    });
   });
 }
