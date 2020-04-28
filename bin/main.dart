@@ -77,7 +77,7 @@ void main(List<String> arguments) async {
         print('Ricardian contract     :   ' + esr.ricardian);
         print('Execution action on    :   ' + esr.action.account);
         print('Action                 :   ' + esr.action.name);
-        print('Decoded data           :   ' + esr.jsonData);
+        print('Decoded data           :   ' + json.encode(esr.action.data));
         print(
             'Signing with           :   ' + esr.account + '@' + esr.permission);
 

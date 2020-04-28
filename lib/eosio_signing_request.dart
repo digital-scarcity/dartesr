@@ -16,10 +16,23 @@ class EosioSigningRequest {
   String permission;
   String ricardian;
   String agreement;
-  String jsonData;
-  var decodedData;
 
   EosioSigningRequest(this.client, this.account, this.permission);
+
+  Map<String, dynamic> fillDataPlaceholders(
+      Map<String, dynamic> request, String accountName) {
+    Map<String, dynamic> result = {};
+
+    request.forEach((key, value) {
+      if (value == '............1') {
+        result[key] = accountName;
+      } else {
+        result[key] = value;
+      }
+    });
+
+    return result;
+  }
 
   Future<dynamic> push() async {
     return await client.pushTransaction(Transaction()..actions = [action]);
@@ -39,39 +52,50 @@ class EosioSigningRequest {
 
     dynamic esrMap = esrType.deserialize(esrType, ser.SerialBuffer(esrBytes));
 
-    var action;
+    var actionMap;
     if (esrMap['req'][1] is List) {
-      action = esrMap['req'][1][0];
+      actionMap = esrMap['req'][1][0];
     } else {
-      action = esrMap['req'][1];
+      actionMap = esrMap['req'][1];
     }
 
-    var abi = await client.getRawAbi(action['account']);
+    var abi = await client.getRawAbi(actionMap['account']);
     var types = ser.getTypesFromAbi(ser.createInitialTypes(), abi.abi);
 
     var actions = Map<String, Type>();
     for (var act in abi.abi.actions) {
       actions[act.name] = ser.getType(types, act.type);
-      if (act.name == action['name']) {
+      if (act.name == actionMap['name']) {
         esr.ricardian = act.ricardian_contract;
       }
     }
     var contract = Contract(types, actions);
-    var actionObj = contract.actions[action['name']];
-    esr.decodedData = actionObj.deserialize(
-        actionObj, ser.SerialBuffer(hex.decode(action['data'])));
-    esr.jsonData = json.encode(esr.decodedData);
+    var actionObj = contract.actions[actionMap['name']];
+    var decodedData = actionObj.deserialize(
+        actionObj, ser.SerialBuffer(hex.decode(actionMap['data'])));
+
+    decodedData.forEach((key, value) {
+      if (value == '............1') {
+        decodedData[key] = account;
+      } else {
+        decodedData[key] = value;
+      }
+    });
 
     esr.action = Action()
-      ..account = action['account']
-      ..name = action['name']
-      ..authorization = [
-        Authorization()
-          ..actor = account
-          ..permission = 'active'
-      ]
-      ..data = esr.decodedData;
+      ..account = actionMap['account']
+      ..name = actionMap['name']
+      ..authorization = [Authorization()];
 
+    if (actionMap['authorization'][0]['actor'] == '............1') {
+      esr.action.authorization[0].actor = account;
+    }
+
+    if (actionMap['authorization'][0]['permission'] == '............2') {
+      esr.action.authorization[0].permission = permission;
+    }
+
+    esr.action.data = decodedData;
     return esr;
   }
 }
