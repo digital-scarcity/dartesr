@@ -1,4 +1,3 @@
-
 var requestAbi = '''
 {
     "version": "eosio::abi/1.1",
@@ -22,6 +21,10 @@ var requestAbi = '''
         {
           "new_type_name": "chain_id",
           "type": "checksum256"
+        },
+        {
+          "new_type_name": "request_flags",
+          "type": "uint8"
         }
     ],
     "structs": [
@@ -79,30 +82,30 @@ var requestAbi = '''
             "name": "transaction_header",
             "base": "",
             "fields": [
-                {
-                    "name": "expiration",
-                    "type": "time_point_sec"
-                },
-                {
-                    "name": "ref_block_num",
-                    "type": "uint16"
-                },
-                {
-                    "name": "ref_block_prefix",
-                    "type": "uint32"
-                },
-                {
-                    "name": "max_net_usage_words",
-                    "type": "varuint32"
-                },
-                {
-                    "name": "max_cpu_usage_ms",
-                    "type": "uint8"
-                },
-                {
-                    "name": "delay_sec",
-                    "type": "varuint32"
-                }
+              {
+                "name": "expiration",
+                "type": "time_point_sec"
+              },
+              {
+                "name": "ref_block_num",
+                "type": "uint16"
+              },
+              {
+                "name": "ref_block_prefix",
+                "type": "uint32"
+              },
+              {
+                "name": "max_net_usage_words",
+                "type": "varuint32"
+              },
+              {
+                "name": "max_cpu_usage_ms",
+                "type": "uint8"
+              },
+              {
+                "name": "delay_sec",
+                "type": "varuint32"
+              }
             ]
         },
         {
@@ -110,16 +113,16 @@ var requestAbi = '''
             "base": "transaction_header",
             "fields": [
                 {
-                    "name": "context_free_actions",
-                    "type": "action[]"
+                  "name": "context_free_actions",
+                  "type": "action[]"
                 },
                 {
-                    "name": "actions",
-                    "type": "action[]"
+                  "name": "actions",
+                  "type": "action[]"
                 },
                 {
-                    "name": "transaction_extensions",
-                    "type": "extension[]"
+                  "name": "transaction_extensions",
+                  "type": "extension[]"
                 }
             ]
         },
@@ -135,24 +138,66 @@ var requestAbi = '''
             }]
         },
         {
+          "name": "info_pair",
+          "base": "",
+          "fields": [
+              {
+                  "name": "key",
+                  "type": "string"
+              },
+              {
+                  "name": "value",
+                  "type": "bytes"
+              }
+          ]
+        },
+        {
           "name": "signing_request",
           "base": "",
           "fields": [
             {
-              "name": "chain_id",
-              "type": "variant_id"
+                "name": "chain_id",
+                "type": "variant_id"
             },
             {
-              "name": "req",
-              "type": "variant_req"
+                "name": "req",
+                "type": "variant_req"
             },
             {
-              "name": "broadcast",
-              "type": "bool"
+                "name": "flags",
+                "type": "request_flags"
             },
             {
-              "name": "callback",
-              "type": "callback?"
+                "name": "callback",
+                "type": "string"
+            },
+            {
+                "name": "info",
+                "type": "info_pair[]"
+            }
+          ]
+        },
+        {
+          "name": "identity",
+          "base": "",
+          "fields": [
+            {
+              "name": "permission",
+              "type": "permission_level?"
+            }
+          ]
+        },
+        {
+          "name": "request_signature",
+          "base": "",
+          "fields": [
+            {
+              "name": "signer",
+              "type": "name"
+            },
+            {
+              "name": "signature",
+              "type": "signature"
             }
           ]
         }
@@ -164,8 +209,14 @@ var requestAbi = '''
       },
       {
         "name": "variant_req",
-        "types": ["action", "action[]", "transaction"]
+        "types": ["action", "action[]", "transaction", "identity"]
       }
+    ],
+    "actions": [
+        {
+            "name": "identity",
+            "type": "identity"
+        }
     ]
 }
 ''';

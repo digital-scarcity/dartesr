@@ -17,8 +17,13 @@ class EosService {
     client = EOSClient(this.endpoint, 'v1', privateKeys: [privateKey]);
   }
 
-  Future<EosioSigningRequest> toRequest(String esrUri) async {
-    return await EosioSigningRequest.factory(client, esrUri, account);
+  Future<EosioSigningRequest> toRequest(String esrUri, {Abi contractAbi}) async {
+    return await EosioSigningRequest.factory(
+      client,
+      esrUri,
+      account,
+      contractAbi: contractAbi,
+    );
   }
 
   // Future<dynamic> send(String esr) async {
