@@ -39,7 +39,12 @@ class EosioSigningRequest {
 
     final Uint8List decodedUri = decodeStringRequest(esrUri);
 
-    final List<int> bytes = Inflate(decodedUri.sublist(1)).getBytes();
+    final int header = decodedUri[0];
+    List<int> bytes = decodedUri.sublist(1);
+
+    if ((header & 1 << 7 != 0)) {
+      bytes = Inflate(bytes).getBytes();
+    }
 
     final Map<String, Type> types = ser.getTypesFromAbi(
       ser.createInitialTypes(),
@@ -53,10 +58,14 @@ class EosioSigningRequest {
 
     if (fullData['req'][0] == 'identity') {
       esr.action = Action()
-        ..account = fullData['req'][1].actions[0]['account']
-        ..name = fullData['req'][1].actions[0]['name']
-        ..authorization = fullData['req'][1].actions[0]['authorization']
-        ..data = fullData['req'][1].actions[0]['data'];
+        ..account = ''
+        ..name = 'identity'
+        ..authorization = [
+          Authorization()
+            ..actor = account
+            ..permission = fullData['req'][1]['permission'] ?? 'active'
+        ]
+        ..data = '0101000000000000000200000000000000';
 
       return esr;
     }
