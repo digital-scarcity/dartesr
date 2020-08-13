@@ -78,7 +78,16 @@ class EosioSigningRequest {
     final action = Action()
       ..account = data['account']
       ..name = data['name']
-      ..authorization = data['authorization']
+      ..authorization = [
+        Authorization()
+          ..actor = data['authorization'][0]['actor'] == actorPlaceholder
+              ? account
+              : data['authorization'][0]['actor']
+          ..permission =
+              data['authorization'][0]['permission'] == permissionPlaceholder
+                  ? permission
+                  : data['authorization'][0]['permission']
+      ]
       ..data = data['data'];
 
     if (contractAbi == null) {
@@ -103,7 +112,7 @@ class EosioSigningRequest {
 
     Type actionType = contract.actions[action.name];
 
-    Map<String, String> actionData = actionType.deserialize(
+    dynamic actionData = actionType.deserialize(
         actionType, ser.SerialBuffer(hex.decode(action.data)));
 
     actionData = actionData.map((key, value) => MapEntry<String, String>(
@@ -114,16 +123,7 @@ class EosioSigningRequest {
     esr.action = Action()
       ..account = action.account
       ..name = action.name
-      ..authorization = [
-        Authorization()
-          ..actor = action.authorization[0].actor == actorPlaceholder
-              ? account
-              : action.authorization[0].actor
-          ..permission =
-              action.authorization[0].permission == permissionPlaceholder
-                  ? permission
-                  : action.authorization[0].permission
-      ]
+      ..authorization = action.authorization
       ..data = actionData;
 
     return esr;

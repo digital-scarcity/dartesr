@@ -21,7 +21,7 @@ void main() {
         contractAbi: Abi.fromJson(json.decode(tokenAbi)),
       );
 
-      // expect(request.action.account, 'eosio.token');
+      expect(request.action.account, 'eosio.token');
     });
 
     // test('Identity request', () async {
