@@ -39,7 +39,12 @@ class EosioSigningRequest {
 
     final Uint8List decodedUri = decodeStringRequest(esrUri);
 
-    final List<int> bytes = Inflate(decodedUri.sublist(1)).getBytes();
+    final int header = decodedUri[0];
+    List<int> bytes = decodedUri.sublist(1);
+
+    if ((header & 1 << 7 != 0)) {
+      bytes = Inflate(bytes).getBytes();
+    }
 
     final Map<String, Type> types = ser.getTypesFromAbi(
       ser.createInitialTypes(),
@@ -53,10 +58,14 @@ class EosioSigningRequest {
 
     if (fullData['req'][0] == 'identity') {
       esr.action = Action()
-        ..account = fullData['req'][1].actions[0]['account']
-        ..name = fullData['req'][1].actions[0]['name']
-        ..authorization = fullData['req'][1].actions[0]['authorization']
-        ..data = fullData['req'][1].actions[0]['data'];
+        ..account = ''
+        ..name = 'identity'
+        ..authorization = [
+          Authorization()
+            ..actor = account
+            ..permission = fullData['req'][1]['permission'] ?? 'active'
+        ]
+        ..data = '0101000000000000000200000000000000';
 
       return esr;
     }
@@ -78,7 +87,16 @@ class EosioSigningRequest {
     final action = Action()
       ..account = data['account']
       ..name = data['name']
-      ..authorization = data['authorization']
+      ..authorization = [
+        Authorization()
+          ..actor = data['authorization'][0]['actor'] == actorPlaceholder
+              ? account
+              : data['authorization'][0]['actor']
+          ..permission =
+              data['authorization'][0]['permission'] == permissionPlaceholder
+                  ? permission
+                  : data['authorization'][0]['permission']
+      ]
       ..data = data['data'];
 
     if (contractAbi == null) {
@@ -103,7 +121,7 @@ class EosioSigningRequest {
 
     Type actionType = contract.actions[action.name];
 
-    Map<String, String> actionData = actionType.deserialize(
+    dynamic actionData = actionType.deserialize(
         actionType, ser.SerialBuffer(hex.decode(action.data)));
 
     actionData = actionData.map((key, value) => MapEntry<String, String>(
@@ -114,16 +132,7 @@ class EosioSigningRequest {
     esr.action = Action()
       ..account = action.account
       ..name = action.name
-      ..authorization = [
-        Authorization()
-          ..actor = action.authorization[0].actor == actorPlaceholder
-              ? account
-              : action.authorization[0].actor
-          ..permission =
-              action.authorization[0].permission == permissionPlaceholder
-                  ? permission
-                  : action.authorization[0].permission
-      ]
+      ..authorization = action.authorization
       ..data = actionData;
 
     return esr;
