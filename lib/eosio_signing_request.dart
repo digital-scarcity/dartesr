@@ -16,13 +16,55 @@ import 'request_abi.dart';
 String actorPlaceholder = '............1';
 String permissionPlaceholder = '............2';
 
+class CallbackPayload {
+    /** The first signature. */
+    String sig;
+    /** Transaction ID as HEX-encoded string. */
+    String tx;
+    /** Block number hint (only present if transaction was broadcast). */
+    String bn;
+    /** Signer authority, aka account name. */
+    String sa;
+    /** Signer permission, e.g. "active". */
+    String sp;
+    /** Reference block num used when resolving request. */
+    String rbn;
+    /** Reference block id used when resolving request. */
+    String rid;
+    /** The originating signing request packed as a uri string. */
+    String req;
+    /** Expiration time used when resolving request. */
+    String ex;
+
+    /** All signatures 0-indexed as `sig0`, `sig1`, etc. */
+    List<String> signatures;// [sig0: string]: string | undefined
+}
+
+class ResolvedCallback {
+      /** The URL to hit. */
+    String url;
+    /**
+     * Whether to run the request in the background. For a https url this
+     * means POST in the background instead of a GET redirect.
+     */
+    bool background;
+    /**
+     * The callback payload as a object that should be encoded to JSON
+     * and POSTed to background callbacks.
+     */
+    CallbackPayload payload;
+
+}
+
 class EosioSigningRequest {
   EOSClient client;
+  dynamic allData; // JSON
   Action action;
   String account;
   String permission;
   String ricardian;
   String agreement;
+  String callback = '';
 
   EosioSigningRequest(this.client, this.account, this.permission);
 
@@ -56,9 +98,20 @@ class EosioSigningRequest {
     final dynamic fullData =
         request.deserialize(request, ser.SerialBuffer(bytes));
 
+    esr.allData = fullData;
+
+    JsonEncoder encoder = new JsonEncoder.withIndent('  ');
+    String prettyprint = encoder.convert(fullData);
+    print("ESR-Full Data X: "+prettyprint);
+    print("ESR callback: "+fullData['callback']);
+
+
+    esr.callback = fullData['callback'] ?? '';
+    esr.flags = fullData['flags'] ?? null;
+
     if (fullData['req'][0] == 'identity') {
       esr.action = Action()
-        ..account = ''
+        ..account = account
         ..name = 'identity'
         ..authorization = [
           Authorization()
@@ -137,4 +190,44 @@ class EosioSigningRequest {
 
     return esr;
   }
+
+  ResolvedCallback getCallback(List<String> signatures, num blockNum) {
+
+    if (callback == null || callback == '') {
+      return null;
+    }
+    
+        // const {callback, flags} = this.request.data
+        // if (!callback || callback.length === 0) {
+        //     return null
+        // }
+        // if (!signatures || signatures.length === 0) {
+        //     throw new Error('Must have at least one signature to resolve callback')
+        // }
+        // const payload: CallbackPayload = {
+        //     sig: signatures[0],
+        //     tx: this.getTransactionId(),
+        //     rbn: String(this.transaction.ref_block_num),
+        //     rid: String(this.transaction.ref_block_prefix),
+        //     ex: this.transaction.expiration,
+        //     req: this.request.encode(),
+        //     sa: this.signer.actor,
+        //     sp: this.signer.permission,
+        // }
+        // for (const [n, sig] of signatures.slice(1).entries()) {
+        //     payload[`sig${n}`] = sig
+        // }
+        // if (blockNum) {
+        //     payload.bn = String(blockNum)
+        // }
+        // const url = callback.replace(/({{([a-z0-9]+)}})/g, (_1, _2, m) => {
+        //     return payload[m] || ''
+        // })
+        // return {
+        //     background: (flags & abi.RequestFlagsBackground) !== 0,
+        //     payload,
+        //     url,
+        // }
+    }
 }
+
