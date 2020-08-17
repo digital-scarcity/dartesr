@@ -33,6 +33,7 @@ void main() {
       );
 
       expect(request.action.name, 'identity');
+      expect(request.callback, 'https://cb.anchor.link/81773cae-b53e-4a7f-86f7-72f943f8ba97');
     });
   });
 }
