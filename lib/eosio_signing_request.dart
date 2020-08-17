@@ -64,7 +64,7 @@ class EosioSigningRequest {
   String permission;
   String ricardian;
   String agreement;
-  String callback = '';
+  String callback;
 
   EosioSigningRequest(this.client, this.account, this.permission);
 
@@ -119,6 +119,8 @@ class EosioSigningRequest {
             ..permission = fullData['req'][1]['permission'] ?? 'active'
         ]
         ..data = '0101000000000000000200000000000000';
+
+      esr.callback = fullData['callback'];
 
       return esr;
     }
